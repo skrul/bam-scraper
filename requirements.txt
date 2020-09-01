@@ -3,3 +3,4 @@ google-auth-httplib2
 google-auth-oauthlib
 discord.py
 tweepy
+git+https://git@github.com/ping/instagram_private_api.git@1.6.0#egg=instagram_private_api

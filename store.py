@@ -50,10 +50,20 @@ class Store:
         self.data = data
 
     def update_state(self, name, service, state):
-        body = {
-            'values' : [[json.dumps(state)]]
-            }
         p = self.data[name]
+
+        updated_json = json.dumps(state)
+        original_json = None
+        for s in p.services:
+            if s.name == service:
+                original_json = json.dumps(s.state)
+
+        if updated_json == original_json:
+            return
+
+        body = {
+            'values' : [[updated_json]]
+            }
         range = self.service_state_col[service] + str(p.row)
         self.sheets_service.spreadsheets().values().update(
             spreadsheetId=SPREADSHEET_ID, range=range, valueInputOption='RAW',

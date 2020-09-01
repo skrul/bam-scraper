@@ -8,6 +8,16 @@ from datetime import datetime
 
 from instagram_web_api import Client
 
+def safeget(dct, *keys):
+    for key in keys:
+        try:
+            dct = dct[key]
+        except KeyError:
+            return None
+        if dct is None:
+            return None
+    return dct
+
 class MyClient(Client):
     @staticmethod
     def _extract_rhx_gis(html):
@@ -31,17 +41,19 @@ class Instagram:
         user_feed_info = self.web_api.user_feed(user_id, count=count)
         created_ms_max = None
         posts = []
+        print(json.dumps(user_feed_info))
         for node in user_feed_info:
-            post_url = node['node']['link']
-            created_ms = int(node['node']['created_time'])
+            n = node['node']
+            post_url = n['link']
+            created_ms = int(n['created_time'])
             if created_ms > last_ts:
                 post = Post(
                     post_url,
                     post_url,
                     full_name + ' (@' + username + ')',
                     'https://instagram.com/' + username,
-                    node['node']['caption']['text'],
-                    node['node']['display_url'],
+                    safeget(n, 'caption', 'text'),
+                    n['display_url'],
                     'via instagram',
                     datetime.fromtimestamp(created_ms)
                 )
@@ -55,4 +67,4 @@ class Instagram:
 
 if __name__ == '__main__':
     instagram = Instagram()
-    print(instagram.get_new_posts('cafedunord', None))
+    print(instagram.get_new_posts('oakland.secret', None))

@@ -14,6 +14,8 @@ def main():
 
     for publisher_name in s.get_publishers():
         p = s.get_publisher(publisher_name)
+        if not p.channel:
+            continue
         for service in p.services:
             posts = None
             if service.name == 'twitter':
